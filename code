@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmokikShop - Магазин самообслуговування</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+        }
+        .checkout-section {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .receipt {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .search-section {
+            margin-top: 40px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>SmokikShop - Магазин самообслуговування</h1>
+        <p>Завершіть свою покупку, щоб отримати чек</p>
+    </header>
+
+    <div class="container">
+        <!-- Кнопка для "Оплатити" -->
+        <div class="checkout-section">
+            <button id="payButton">Оплатити</button>
+        </div>
+
+        <!-- Виведення чеку -->
+        <div class="receipt" id="receipt">
+            <p>Чек буде згенеровано після оплати.</p>
+        </div>
+
+        <!-- Пошук чеку -->
+        <div class="search-section">
+            <h2>Пошук чеку по номеру</h2>
+            <input type="text" id="receiptSearch" placeholder="Введіть номер чеку">
+            <button onclick="searchReceipt()">Пошук</button>
+            <p id="searchResult"></p>
+        </div>
+    </div>
+
+    <script>
+        // Функція для генерації унікального номера чеку
+        function generateReceiptNumber() {
+            const now = new Date();
+            const randomId = Math.floor(Math.random() * 1000000); // випадкове число
+            return `${now.getTime()}-${randomId}`; // об'єднуємо час і випадковий номер
+        }
+
+        // Функція для обробки оплати та генерування чеку
+        document.getElementById('payButton').addEventListener('click', function() {
+            const receiptNumber = generateReceiptNumber();
+            document.getElementById('receipt').innerHTML = `
+                <p>Номер чеку: ${receiptNumber}</p>
+                <p>Товар 1: 100 грн</p>
+                <p>Товар 2: 50 грн</p>
+                <p>Загальна сума: 150 грн</p>
+                <p><a href="https://gist.github.com" target="_blank">Переглянути чек на GitHub</a></p>
+            `;
+            localStorage.setItem(receiptNumber, JSON.stringify({
+                items: [
+                    { name: "Товар 1", price: 100 },
+                    { name: "Товар 2", price: 50 }
+                ],
+                total: 150
+            }));
+        });
+
+        // Функція для пошуку чеку
+        function searchReceipt() {
+            const receiptNumber = document.getElementById('receiptSearch').value;
+            const storedReceipt = localStorage.getItem(receiptNumber);
+            if (storedReceipt) {
+                const receiptData = JSON.parse(storedReceipt);
+                document.getElementById('searchResult').innerHTML = `
+                    <p>Номер чеку: ${receiptNumber}</p>
+                    <p>Товари:</p>
+                    <ul>
+                        ${receiptData.items.map(item => `<li>${item.name} - ${item.price} грн</li>`).join('')}
+                    </ul>
+                    <p>Загальна сума: ${receiptData.total} грн</p>
+                `;
+            } else {
+                document.getElementById('searchResult').innerHTML = "Чек не знайдено.";
+            }
+        }
+    </script>
+
+</body>
+</html>
